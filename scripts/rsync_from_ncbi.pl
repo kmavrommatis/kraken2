@@ -99,20 +99,22 @@ if ($use_ftp) {
   chdir "all" or die "$PROG: can't chdir into 'all' directory: $!\n";
   while (<MANIFEST>) {
     chomp;
-    my $ftp = ftp_connection();
+    #my $ftp = ftp_connection();
     my $try = 0;
     my $ntries = 5;
     my $sleepsecs = 3;
     while($try < $ntries) {
         $try++;
-        last if $ftp->get($_);
-        warn "$PROG: unable to download $_ on try $try of $ntries: ".$ftp->message()."\n";
+        my $res=system("/usr/bin/wget https://${SERVER}${SERVER_PATH}/$_");
+        last if $res ==0;
+        #last if $ftp->get($_);
+        warn "$PROG: unable to download $_ on try $try of $ntries: \n";
         last if $try == $ntries;
         sleep $sleepsecs;
         $sleepsecs *= 3;
     }
-    die "$PROG: unable to download ftp://${SERVER}${SERVER_PATH}/$_\n" if $try == $ntries;
-    $ftp->quit;
+    die "$PROG: unable to download https://${SERVER}${SERVER_PATH}/$_\n" if $try == $ntries;
+    #$ftp->quit;
   }
   close MANIFEST;
   chdir ".." or die "$PROG: can't return to correct directory: $!\n";
