@@ -79,18 +79,6 @@ if ($is_protein && ! $use_ftp) {
   close MANIFEST;
 }
 
-sub ftp_connection {
-    my $ftp = Net::FTP->new($SERVER, Passive => 1)
-        or die "$PROG: FTP connection error: $@\n";
-    $ftp->login($FTP_USER, $FTP_PASS)
-        or die "$PROG: FTP login error: " . $ftp->message() . "\n";
-    $ftp->binary()
-        or die "$PROG: FTP binary mode error: " . $ftp->message() . "\n";
-    $ftp->cwd($SERVER_PATH)
-        or die "$PROG: FTP CD error: " . $ftp->message() . "\n";
-    return $ftp;
-}
-
 if ($use_ftp) {
   print STDERR "Step 1/2: Performing ftp file transfer of requested files\n";
   open MANIFEST, "<", "manifest.txt"
