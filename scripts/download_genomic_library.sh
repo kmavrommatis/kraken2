@@ -62,7 +62,11 @@ case $library_name in
     rm -f library.f* plasmid.*
     ## This is staying FTP only D/L for now
     1>&2 echo -n "Downloading plasmid files from FTP..."
-    wget -q --no-remove-listing --spider $FTP_SERVER/genomes/refseq/plasmid/
+    #wget -q --no-remove-listing --spider $FTP_SERVER/genomes/refseq/plasmid/
+    curl -s $FTP_SERVER/genomes/refseq/plasmid/ \
+    | perl -nle 'print  "$1"  while (/<a\s+href\s*=\s*"([^"]+.gz)"/g)' \
+    | sort -u \
+    > .listing
     if [ -n "$KRAKEN2_PROTEIN_DB" ]; then
       awk '{ print $NF }' .listing | perl -ple 'tr/\r//d' | grep '\.faa\.gz' > manifest.txt
     else
